@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container my-5">
+    {% if recipe %}
+    <div class="row">
+        <!-- Back Button -->
+        <div class="col-12 mb-4">
+            <a href="{% url 'index' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Back to Recipes
+            </a>
+        </div>
+        
+        <!-- Recipe Image -->
+        <div class="col-lg-6 mb-4">
+            <div class="recipe-detail-image">
+                <img src="{{ recipe.recipe_img.url }}" alt="{{ recipe.name }}" class="img-fluid rounded-4 shadow-lg">
+            </div>
+        </div>
+        
+        <!-- Recipe Details -->
+        <div class="col-lg-6">
+            <div class="recipe-detail-info">
+                <h1 class="display-5 fw-bold mb-3">{{ recipe.name }}</h1>
+                
+                <!-- Meta Info -->
+                <div class="recipe-detail-meta mb-4">
+                    <div class="meta-item">
+                        <i class="bi bi-clock-fill text-primary"></i>
+                        <span><strong>Prep Time:</strong> {{ recipe.Prep_time }}</span>
+                    </div>
+                    
+                    <div class="meta-item">
+                        <i class="bi bi-bar-chart-fill text-warning"></i>
+                        <span><strong>Difficulty:</strong> 
+                            {% if recipe.difficulty == 1 %}
+                                <span class="badge bg-success">Easy</span>
+                            {% elif recipe.difficulty == 2 %}
+                                <span class="badge bg-warning text-dark">Medium</span>
+                            {% else %}
+                                <span class="badge bg-danger">Hard</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="meta-item">
+                        {% if recipe.vegetarian %}
+                            <i class="bi bi-circle-fill text-success" style="font-size: 10px;"></i>
+                            <span><strong>Type:</strong> <span class="badge bg-success">Vegetarian</span></span>
+                        {% else %}
+                            <i class="bi bi-circle-fill text-danger" style="font-size: 10px;"></i>
+                            <span><strong>Type:</strong> <span class="badge bg-danger">Non-Vegetarian</span></span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Ingredients Section -->
+                <div class="ingredients-section">
+                    <h3 class="fw-bold mb-3">
+                        <i class="bi bi-list-ul"></i> Ingredients & Instructions
+                    </h3>
+                    <div class="ingredients-box">
+                        {% if ingredients %}
+                            <ul class="ingredient-list">
+                                {% for ingredient in ingredients %}
+                                    {% if ingredient %}
+                                    <li>{{ ingredient }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">No ingredients listed</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons mt-4">
+                    <a href="{% url 'update_detail' recipe.id %}" class="btn btn-warning btn-lg">
+                        <i class="bi bi-pencil-fill"></i> Update Recipe
+                    </a>
+                    <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-grid-fill"></i> All Recipes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h2 class="mt-3">Recipe Not Found</h2>
+        <p class="text-muted">The recipe you're looking for doesn't exist.</p>
+        <a href="{% url 'index' %}" class="btn btn-primary mt-3">
+            <i class="bi bi-house-fill"></i> Go Home
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.recipe-detail-image img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+}
+
+.recipe-detail-info {
+    padding: 20px;
+}
+
+.recipe-detail-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.meta-item i {
+    font-size: 1.25rem;
+}
+
+.ingredients-section {
+    margin-top: 30px;
+}
+
+.ingredients-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+}
+
+.ingredient-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ingredient-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 1rem;
+    color: #495057;
+}
+
+.ingredient-list li:last-child {
+    border-bottom: none;
+}
+
+.ingredient-list li:before {
+    content: "✓";
+    color: #28a745;
+    font-weight: bold;
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .recipe-detail-image img {
+        height: 300px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
+</style>
+
+{% endblock %}

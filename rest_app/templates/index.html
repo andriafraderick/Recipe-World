@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="hero-section mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-dark mb-3">Discover Delicious Recipes</h1>
+                <p class="lead text-muted mb-4">Explore our collection of handcrafted recipes from around the world</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <form method="POST" class="search-form">
+                {% csrf_token %}
+                <div class="input-group input-group-lg shadow-sm">
+                    <input type="text" name="search" class="form-control border-0" 
+                           placeholder="🔍 Search for recipes..."
+                           value="{% if search_query %}{{ search_query }}{% endif %}">
+                    <button class="btn btn-primary px-5" type="submit">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results Header -->
+{% if data %}
+<div class="container mb-4">
+    <h2 class="text-center fw-bold">Search Results for "{{ search_query }}"</h2>
+    <p class="text-center text-muted">Found {{ data|length }} recipe(s)</p>
+</div>
+{% else %}
+<div class="container mb-4">
+    <h2 class="text-center fw-bold">Available Recipes</h2>
+    <p class="text-center text-muted">Explore our delicious collection</p>
+</div>
+{% endif %}
+
+<!-- Recipe Cards -->
+<div class="container">
+    <div class="row g-4">
+        
+        <!-- Search Results -->
+        {% if data %}
+            {% for r in data %}
+            <div class="col-lg-4 col-md-6">
+                <div class="recipe-card">
+                    <div class="recipe-image-wrapper">
+                        <img src="{{ r.recipe_img.url }}" alt="{{ r.name }}" class="recipe-image">
+                        <div class="recipe-overlay">
+                            <a href="{% url 'recipe_fetch' r.id %}" class="btn btn-light btn-sm me-2">
+                                <i class="bi bi-eye"></i> Details
+                            </a>
+                            <a href="{% url 'update_detail' r.id %}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Update
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-info">
+                        <h5 class="recipe-title">{{ r.name }}</h5>
+                        
+                        <div class="recipe-meta">
+                            <span class="badge-meta">
+                                <i class="bi bi-clock"></i> {{ r.Prep_time }}
+                            </span>
+                            
+                            {% if r.difficulty == 1 %}
+                                <span class="badge bg-success">Easy</span>
+                            {% elif r.difficulty == 2 %}
+                                <span class="badge bg-warning text-dark">Medium</span>
+                            {% else %}
+                                <span class="badge bg-danger">Hard</span>
+                            {% endif %}
+                            
+                            {% if r.vegetarian %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-circle-fill veg-icon"></i> Veg
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-circle-fill"></i> Non-Veg
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if not data %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">No recipes found matching your search.</p>
+                <a href="{% url 'index' %}" class="btn btn-primary">View All Recipes</a>
+            </div>
+            {% endif %}
+        
+        <!-- Paginated Results -->
+        {% else %}
+            {% for r in recipe.object_list %}
+            <div class="col-lg-4 col-md-6">
+                <div class="recipe-card">
+                    <div class="recipe-image-wrapper">
+                        <img src="{{ r.recipe_img.url }}" alt="{{ r.name }}" class="recipe-image">
+                        <div class="recipe-overlay">
+                            <a href="{% url 'recipe_fetch' r.id %}" class="btn btn-light btn-sm me-2">
+                                <i class="bi bi-eye"></i> Details
+                            </a>
+                            <a href="{% url 'update_detail' r.id %}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Update
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-info">
+                        <h5 class="recipe-title">{{ r.name }}</h5>
+                        
+                        <div class="recipe-meta">
+                            <span class="badge-meta">
+                                <i class="bi bi-clock"></i> {{ r.Prep_time }}
+                            </span>
+                            
+                            {% if r.difficulty == 1 %}
+                                <span class="badge bg-success">Easy</span>
+                            {% elif r.difficulty == 2 %}
+                                <span class="badge bg-warning text-dark">Medium</span>
+                            {% else %}
+                                <span class="badge bg-danger">Hard</span>
+                            {% endif %}
+                            
+                            {% if r.vegetarian %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-circle-fill veg-icon"></i> Veg
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-circle-fill"></i> Non-Veg
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+        
+    </div>
+    
+    <!-- Pagination -->
+    {% if recipe %}
+    <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if recipe.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ recipe.previous_page_number }}">
+                    <i class="bi bi-chevron-left"></i> Previous
+                </a>
+            </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">
+                    Page {{ recipe.number }} of {{ recipe.paginator.num_pages }}
+                </span>
+            </li>
+            
+            {% if recipe.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ recipe.next_page_number }}">
+                    Next <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}

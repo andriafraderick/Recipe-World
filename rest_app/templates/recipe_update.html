@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i class="bi bi-pencil-square"></i> Update Recipe
+                </h2>
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg"></i> Cancel
+                </a>
+            </div>
+            
+            <!-- Update Form Card -->
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
+                    
+                    {% if recipe %}
+                    <!-- Current Recipe Preview -->
+                    <div class="current-recipe-preview mb-4 p-3 bg-light rounded-3">
+                        <h5 class="fw-bold mb-3">Current Recipe Details:</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if recipe.recipe_img %}
+                                <img src="{{ recipe.recipe_img.url }}" class="img-fluid rounded-3" alt="{{ recipe.name }}">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <p><strong>Name:</strong> {{ recipe.name }}</p>
+                                <p><strong>Prep Time:</strong> {{ recipe.Prep_time }}</p>
+                                <p><strong>Difficulty:</strong> 
+                                    {% if recipe.difficulty == 1 %}Easy
+                                    {% elif recipe.difficulty == 2 %}Medium
+                                    {% else %}Hard{% endif %}
+                                </p>
+                                <p><strong>Type:</strong> 
+                                    {% if recipe.vegetarian %}Vegetarian
+                                    {% else %}Non-Vegetarian{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Update Form -->
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'update_recipe' recipe_id %}">
+
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_name" class="form-label fw-bold">
+                                <i class="bi bi-bookmark-fill text-primary"></i> Recipe Name
+                            </label>
+                            {{ form.name }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_Prep_time" class="form-label fw-bold">
+                                <i class="bi bi-clock-fill text-warning"></i> Preparation Time
+                            </label>
+                            {{ form.Prep_time }}
+                            <small class="form-text text-muted">Format: HH:MM:SS (e.g., 01:30:00 for 1 hour 30 minutes)</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_difficulty" class="form-label fw-bold">
+                                <i class="bi bi-bar-chart-fill text-info"></i> Difficulty Level
+                            </label>
+                            {{ form.difficulty }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_vegetarian" class="form-label fw-bold">
+                                <i class="bi bi-circle-fill text-success"></i> Vegetarian
+                            </label>
+                            <div class="form-check">
+                                {{ form.vegetarian }}
+                                <label class="form-check-label" for="id_vegetarian">
+                                    Check if this recipe is vegetarian
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_recipe_img" class="form-label fw-bold">
+                                <i class="bi bi-image-fill text-danger"></i> Recipe Image
+                            </label>
+                            {{ form.recipe_img }}
+                            <small class="form-text text-muted">Upload a new image to replace the current one</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_description" class="form-label fw-bold">
+                                <i class="bi bi-list-ul text-secondary"></i> Ingredients & Instructions
+                            </label>
+                            {{ form.description }}
+                            <small class="form-text text-muted">Separate each ingredient/step with a period (.)</small>
+                        </div>
+                        
+                        <!-- Buttons -->
+                        <div class="d-flex gap-3 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                <i class="bi bi-check-circle-fill"></i> Update Recipe
+                            </button>
+                            <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-lg">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+/* Form Styling */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+
+textarea.form-control {
+    min-height: 150px;
+}
+
+.form-label {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #212529;
+}
+
+.form-check-input {
+    width: 1.5em;
+    height: 1.5em;
+    margin-right: 10px;
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.current-recipe-preview {
+    border-left: 4px solid #0d6efd;
+}
+
+.current-recipe-preview img {
+    max-height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+/* Button Styling */
+.btn-lg {
+    padding: 14px 28px;
+    font-weight: 600;
+}
+
+/* Card Styling */
+.card {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .current-recipe-preview .row {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-3 .btn {
+        width: 100%;
+    }
+}
+</style>
+
+{% endblock %}
