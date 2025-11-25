@@ -2,7 +2,30 @@ services:
   - type: web
     name: recipe-world
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
     startCommand: gunicorn recipe_project.wsgi:application
     envVars:
-      PYTHON_VERSION: 3.10.12
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: DATABASE_URL
+        fromDatabase:
+          name: recipe-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+
+databases:
+  - name: recipe-db
+    databaseName: recipe_db_1fhc
+    user: recipe_db_1fhc_user
+```
+
+## 4. Set Environment Variables in Render Dashboard
+
+Go to your Render service dashboard and add these environment variables:
+
+1. **DATABASE_URL**: Use the **Internal Database URL** from your PostgreSQL database dashboard. It should look like:
+```
+   postgresql://recipe_db_1fhc_user:PASSWORD@dpg-d4ituingi27c739slj40-a/recipe_db_1fhc
