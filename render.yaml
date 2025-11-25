@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: recipe-world
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn recipe_project.wsgi:application
+    envVars:
+      PYTHON_VERSION: 3.10.12
